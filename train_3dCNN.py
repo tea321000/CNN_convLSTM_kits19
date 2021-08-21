@@ -10,6 +10,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.transforms import ToTensor
+import argparse
 
 from threeDCNN import ThreeDCNN
 
@@ -76,7 +77,6 @@ class RandomCrop(object):
     def __call__(self, sample):
         image, label = sample['image'], sample['label']
 
-
         # pad the sample if necessary
         if label.shape[0] <= self.output_size[0] or label.shape[1] <= self.output_size[1] or label.shape[2] <= \
                 self.output_size[2]:
@@ -105,7 +105,7 @@ class RandomCrop(object):
         return {'image': image, 'label': label}
 
 
-def argparse():
+def parse_arguments():
     def source_path(path):
         if os.path.isdir(path):
             return path
@@ -114,14 +114,17 @@ def argparse():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--batch_size', help='batch size', default=2, type=int)
-    parser.add_argument('-d', '--dataset', help='path to kits19 dataset', default='/media/research/dataset/kits19/data',
+    parser.add_argument('-d', '--dataset', help='path to kits19 dataset',
+                        default='/media/me/research/dataset/kits19/data',
                         type=source_path)
     parser.add_argument('-p', '--patch_size', help='patch size', type=list, default=[96, 96, 96])
+    parser.add_argument('-l', '--learning_rate', help='learning rate', type=float, default=0.01)
+    parser.add_argument('-e', '--epochs', help='epochs', type=int, default=100)
     return parser.parse_args()
 
 
 if __name__ == '__main__':
-    args = argparse()
+    args = parse_arguments()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     train_dataset = Kits19(root_dir=args.dataset, transform=transforms.Compose([
         RandomRotFlip(),
@@ -129,7 +132,7 @@ if __name__ == '__main__':
         ToTensor(),
     ]))
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    model = ThreeDCNN.to(device)
+    model = ThreeDCNN().to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     train_loss = []

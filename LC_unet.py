@@ -20,13 +20,16 @@ class CNNLayer(nn.Module):
         )
 
     def forward(self, x):
-        return self.layer(x)
+        res = self.layer(x[:,:,0,:,:]).unsqueeze(2)
+        for depth in range(1, x.shape[2]):
+            res = torch.cat((res, self.layer(x[:,:,depth,:,:]).unsqueeze(2)),dim=2)
+        return res
 
 
 class Downsample(nn.Module):
     def __init__(self, kernel_size):
         super(Downsample, self).__init__()
-        self.layer = torch.nn.Sequential(torch.nn.MaxPool3d(kernel_size))
+        self.layer = torch.nn.MaxPool3d(kernel_size)
 
     def forward(self, x):
         return self.layer(x)
@@ -35,12 +38,11 @@ class Downsample(nn.Module):
 class Upsample(nn.Module):
     def __init__(self, C):
         super(Upsample, self).__init__()
-        self.C = torch.nn.Conv2d(C, C // 2, 1, 1)
+        self.C = torch.nn.Conv3d(C, C // 2, 1, 1)
 
     def forward(self, x):
         up = F.interpolate(x, scale_factor=2, mode='trilinear')
-        x = self.C(up)
-        return self.C(x)
+        return self.C(up)
         # return torch.cat((x, r), 1)
 
 
@@ -179,8 +181,8 @@ class ConvLSTM(nn.Module):
         last_state_list, layer_output
         """
         if not self.batch_first:
-            # (t, b, c, h, w) -> (b, t, c, h, w)
-            input_tensor = input_tensor.permute(1, 0, 2, 3, 4)
+            # ( b, c, t, h, w) -> (b, t, c, h, w)
+            input_tensor = input_tensor.permute(0, 2, 1, 3, 4)
 
         # Implement stateful ConvLSTM
         if hidden_state is not None:
@@ -201,6 +203,7 @@ class ConvLSTM(nn.Module):
             h, c = hidden_state[layer_idx]
             output_inner = []
             for t in range(seq_len):  # 逐个stamp计算
+
                 h, c = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :], cur_state=[h, c])
                 output_inner.append(h)  # 第 layer_idx 层的第t个stamp的输出状态
 
@@ -208,13 +211,17 @@ class ConvLSTM(nn.Module):
             cur_layer_input = layer_output  # 准备第layer_idx+1层的输入张量
 
             layer_output_list.append(layer_output)  # 当前层的所有timestamp的h状态的串联
-            last_state_list.append([h, c])  # 当前层的最后一个stamp的输出状态的[h,c]
+            # last_state_list.append([h, c])  # 当前层的最后一个stamp的输出状态的[h,c]
 
         if not self.return_all_layers:
             layer_output_list = layer_output_list[-1:]
-            last_state_list = last_state_list[-1:]
+            # last_state_list = last_state_list[-1:]
 
-        return layer_output_list, last_state_list
+        if not self.batch_first:
+            # ( b, t, c, h, w) -> (b, c, t, h, w)
+            layer_output_list[-1] = layer_output_list[-1].permute(0, 2, 1, 3, 4)
+        return layer_output_list[-1]
+        # return layer_output_list, last_state_list
 
     def _init_hidden(self, batch_size, image_size):
         """
@@ -255,22 +262,22 @@ class ConvLSTM(nn.Module):
 class LC_UNet(torch.nn.Module):
     def __init__(self):
         super(LC_UNet, self).__init__()
-        kernel_size = 3
-        num_layers = 2
-        self.Conv1 = CNNLayer(3, 32)
-        self.convLSTM = ConvLSTM(32, 32, kernel_size, num_layers)
-        self.Downsample1 = Downsample(32)
+        kernel_size = (3, 3)
+        num_layers = 1
+        self.Conv1 = CNNLayer(1, 32)
+        self.convLSTM1 = ConvLSTM(32, 32, kernel_size, num_layers)
+        self.Downsample1 = Downsample(2)
         self.Conv2 = CNNLayer(32, 64)
-        self.convLSTM = ConvLSTM(64, 64, kernel_size, num_layers)
-        self.Downsample2 = Downsample(64)
+        self.convLSTM2 = ConvLSTM(64, 64, kernel_size, num_layers)
+        self.Downsample2 = Downsample(2)
         self.Conv3 = CNNLayer(64, 128)
-        self.convLSTM = ConvLSTM(128, 128, kernel_size, num_layers)
-        self.Downsample3 = Downsample(128)
+        self.convLSTM3 = ConvLSTM(128, 128, kernel_size, num_layers)
+        self.Downsample3 = Downsample(2)
         self.Conv4 = CNNLayer(128, 256)
-        self.convLSTM = ConvLSTM(256, 256, kernel_size, num_layers)
-        self.Downsample4 = Downsample(256)
+        self.convLSTM4 = ConvLSTM(256, 256, kernel_size, num_layers)
+        self.Downsample4 = Downsample(2)
         self.Conv5 = CNNLayer(256, 512)
-        self.convLSTM = ConvLSTM(512, 512, kernel_size, num_layers)
+        self.convLSTM5 = ConvLSTM(512, 512, kernel_size, num_layers)
         self.Upsample1 = Upsample(512)
         self.Conv6 = CNNLayer(512, 256)
         self.Upsample2 = Upsample(256)
@@ -279,23 +286,23 @@ class LC_UNet(torch.nn.Module):
         self.Conv8 = CNNLayer(128, 64)
         self.Upsample4 = Upsample(64)
         self.Conv9 = CNNLayer(64, 32)
-        self.pre = torch.nn.Conv2d(32, 3, 3, 1, 1)
+        self.final = torch.nn.Conv3d(32, 3, 3, 1, 1)
 
     def forward(self, x):
         x = self.Conv1(x)
-        lstm1 = self.convLSTM(x)
+        lstm1 = self.convLSTM1(x)
         x = self.Downsample1(lstm1)
         x = self.Conv2(x)
-        lstm2 = self.convLSTM(x)
+        lstm2 = self.convLSTM2(x)
         x = self.Downsample2(lstm2)
         x = self.Conv3(x)
-        lstm3 = self.convLSTM(x)
+        lstm3 = self.convLSTM3(x)
         x = self.Downsample3(lstm3)
         x = self.Conv4(x)
-        lstm4 = self.convLSTM(x)
+        lstm4 = self.convLSTM4(x)
         x = self.Downsample4(lstm4)
         x = self.Conv5(x)
-        x = self.convLSTM(x)
+        x = self.convLSTM5(x)
         upsample1 = self.Upsample1(x)
         concat1 = torch.cat([upsample1, lstm4], dim=1)
         x = self.Conv6(concat1)
@@ -308,7 +315,7 @@ class LC_UNet(torch.nn.Module):
         upsample4 = self.Upsample4(x)
         concat4 = torch.cat([upsample4, lstm1], dim=1)
         x = self.Conv9(concat4)
-        x = self.pre(x)
+        x = self.final(x)
         # x = self.sigmoid(x)
         return x
 
