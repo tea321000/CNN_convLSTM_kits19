@@ -1,9 +1,7 @@
-import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
-import SimpleITK as sitk
+
 
 class CNNLayer(nn.Module):
     def __init__(self, C_in, C_out):
@@ -20,15 +18,19 @@ class CNNLayer(nn.Module):
             # torch.nn.MaxPool3d(),
             torch.nn.ReLU()
         )
+
     def forward(self, x):
         return self.layer(x)
+
 
 class Downsample(nn.Module):
     def __init__(self, kernel_size):
         super(Downsample, self).__init__()
         self.layer = torch.nn.Sequential(torch.nn.MaxPool3d(kernel_size))
+
     def forward(self, x):
         return self.layer(x)
+
 
 class Upsample(nn.Module):
     def __init__(self, C):
@@ -40,6 +42,7 @@ class Upsample(nn.Module):
         x = self.C(up)
         return self.C(x)
         # return torch.cat((x, r), 1)
+
 
 class ConvLSTMCell(nn.Module):
 
@@ -101,6 +104,7 @@ class ConvLSTMCell(nn.Module):
         init_c = torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device)
         return (init_h, init_c)
 
+
 class ConvLSTM(nn.Module):
     """
     Parameters:参数介绍
@@ -128,6 +132,7 @@ class ConvLSTM(nn.Module):
         >> _, last_states = convlstm(x)
         >> h = last_states[0][0]  # 0 for layer index, 0 for h index
     """
+
     def __init__(self, input_dim, hidden_dim, kernel_size, num_layers,
                  batch_first=False, bias=True, return_all_layers=False):
         super(ConvLSTM, self).__init__()
@@ -246,25 +251,26 @@ class ConvLSTM(nn.Module):
             param = [param] * num_layers
         return param
 
+
 class LC_UNet(torch.nn.Module):
     def __init__(self):
         super(LC_UNet, self).__init__()
-        kernel_size=3
-        num_layers=2
+        kernel_size = 3
+        num_layers = 2
         self.Conv1 = CNNLayer(3, 32)
-        self.convLSTM=ConvLSTM(32,32,kernel_size,num_layers)
+        self.convLSTM = ConvLSTM(32, 32, kernel_size, num_layers)
         self.Downsample1 = Downsample(32)
         self.Conv2 = CNNLayer(32, 64)
-        self.convLSTM = ConvLSTM(64,64,kernel_size,num_layers)
+        self.convLSTM = ConvLSTM(64, 64, kernel_size, num_layers)
         self.Downsample2 = Downsample(64)
         self.Conv3 = CNNLayer(64, 128)
-        self.convLSTM = ConvLSTM(128,128,kernel_size,num_layers)
+        self.convLSTM = ConvLSTM(128, 128, kernel_size, num_layers)
         self.Downsample3 = Downsample(128)
         self.Conv4 = CNNLayer(128, 256)
-        self.convLSTM = ConvLSTM(256,256,kernel_size,num_layers)
+        self.convLSTM = ConvLSTM(256, 256, kernel_size, num_layers)
         self.Downsample4 = Downsample(256)
         self.Conv5 = CNNLayer(256, 512)
-        self.convLSTM = ConvLSTM(512,512,kernel_size,num_layers)
+        self.convLSTM = ConvLSTM(512, 512, kernel_size, num_layers)
         self.Upsample1 = Upsample(512)
         self.Conv6 = CNNLayer(512, 256)
         self.Upsample2 = Upsample(256)
@@ -274,93 +280,36 @@ class LC_UNet(torch.nn.Module):
         self.Upsample4 = Upsample(64)
         self.Conv9 = CNNLayer(64, 32)
         self.pre = torch.nn.Conv2d(32, 3, 3, 1, 1)
-        self.Th = torch.nn.Sigmoid()
 
     def forward(self, x):
         x = self.Conv1(x)
-        lstm1=self.convLSTM(x)
-        x=self.Downsample1(lstm1)
-        x=self.Conv2(x)
-        lstm2=self.convLSTM(x)
-        x=self.Downsample2(lstm2)
-        x=self.Conv3(x)
-        lstm3=self.convLSTM(x)
-        x=self.Downsample3(lstm3)
-        x=self.Conv4(x)
-        lstm4=self.convLSTM(x)
-        x=self.Downsample4(lstm4)
-        x=self.Conv5(x)
-        lstm5=self.convLSTM(x)
-        upsample1=self.Upsample1(lstm5)
-        concat1=torch.cat([upsample1,lstm4],dim=1)
-        x=self.Conv6(concat1)
-        upsample2=self.Upsample2(conv6)
-        concat2=torch.cat([upsample2,lstm3],dim=1)
-        x=self.Conv7(concat2)
-        upsample3=self.Upsample3(conv7)
-        concat3=torch.cat([upsample3,lstm2],dim=1)
-        x=self.Conv8(concat3)
-        upsample4=self.Upsample4(conv8)
-        concat4=torch.cat([upsample4,lstm1],dim=1)
-        x=self.Conv9(concat4)
-        x=self.pre(x)
-        x=self.sigmoid(x)
+        lstm1 = self.convLSTM(x)
+        x = self.Downsample1(lstm1)
+        x = self.Conv2(x)
+        lstm2 = self.convLSTM(x)
+        x = self.Downsample2(lstm2)
+        x = self.Conv3(x)
+        lstm3 = self.convLSTM(x)
+        x = self.Downsample3(lstm3)
+        x = self.Conv4(x)
+        lstm4 = self.convLSTM(x)
+        x = self.Downsample4(lstm4)
+        x = self.Conv5(x)
+        x = self.convLSTM(x)
+        upsample1 = self.Upsample1(x)
+        concat1 = torch.cat([upsample1, lstm4], dim=1)
+        x = self.Conv6(concat1)
+        upsample2 = self.Upsample2(x)
+        concat2 = torch.cat([upsample2, lstm3], dim=1)
+        x = self.Conv7(concat2)
+        upsample3 = self.Upsample3(x)
+        concat3 = torch.cat([upsample3, lstm2], dim=1)
+        x = self.Conv8(concat3)
+        upsample4 = self.Upsample4(x)
+        concat4 = torch.cat([upsample4, lstm1], dim=1)
+        x = self.Conv9(concat4)
+        x = self.pre(x)
+        # x = self.sigmoid(x)
         return x
 
-class argparse():
-    pass
-args = argparse()
-args.epochs, args.learning_rate, args.patience = [100, 0.001, 4]
-args.hidden_size, args.input_size= [40, 30]
-args.device, = [torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),]
 
- if __name__ == '__main__':
-
-    class Kits19(Dataset):
-        def __init__(self,root_dir,transform=None):
-            self.root_dir = root_dir
-            self.transform = transform
-           # path=os.path.join(root_dir)
-            file_list=os.listdir(path)
-            list=[]
-            for dirs,files in os.walk('root_dir'):
-                for i in files:
-                    p=os.path.join(path,i)
-                    list.append(p)
-
-        def __getitem__(self, index):
-            imaging_path=os.path.join(self.root_dir,self.file[index])
-            image = sitk.ReadImage(imaging_path)
-            image = sitk.GetArrayFromImage(image)
-            if self.transformer:
-                image = self.transform(image)
-                label=self.transform(label)
-           # label=self.img_labels[index]
-            return image, label
-        def __len__(self):
-            return len(self.file)
-
-    train_dataset = Kits19(root_dir="xxx", train=True, download=False)
-    train_dataloader=Dataloader(dataset=train_dataset,batch_size=4,shuffle=True,num_workers=2)
-    model=LC_UNet().to(args.device)
-    criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(LC_UNet.parameters(), lr=args.learning_rate)
-    train_loss = []
-    train_epochs_loss = []
-    for epoch in range(args.epochs):
-        LC_UNet.train()
-        train_epoch_loss = []
-        for idx,(data_x,data_y) in enumerate(train_dataloader,0):
-            data_x = data_x.to(torch.float32).to(args.device)
-            data_y = data_y.to(torch.float32).to(args.device)
-            outputs = LC_UNet(data_x)
-            optimizer.zero_grad()
-            loss = criterion(data_y,outputs)
-            loss.backward()
-            optimizer.step()
-            train_epoch_loss.append(loss.item())
-            train_loss.append(loss.item())
-            if idx%(len(train_dataloader)//2)==0:
-                print("epoch={}/{},{}/{}of train, loss={}".format(
-                    epoch, args.epochs, idx, len(train_dataloader),loss.item()))
-        train_epochs_loss.append(np.average(train_epoch_loss))

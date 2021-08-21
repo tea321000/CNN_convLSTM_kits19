@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class CNNlayer(nn.Module):
+class CNNLayer(nn.Module):
     def __init__(self, C_in, C_out):
-        super(CNNlayer, self).__init__()
+        super(CNNLayer, self).__init__()
         self.layer = torch.nn.Sequential(
             torch.nn.Conv3d(C_in, C_out, 3, 1, 1),
             torch.nn.BatchNorm3d(C_out),
@@ -29,13 +29,13 @@ class Upsample(nn.Module):
         self.C = torch.nn.Conv3d(C, C // 2, 1, 1)
 
     def forward(self, x):
-        up = F.interpolate(x, scale_factor=2, mode='trilinear')
+        up = F.interpolate(x, scale_factor=2, mode='bilinear')
         x = self.C(up)
         return self.C(x)
 
-class three_d_CNN(nn.Module):
+class ThreeDCNN(nn.Module):
     def __init__(self):
-        super(three_d_CNN, self).__init__()
+        super(ThreeDCNN, self).__init__()
         self.Conv1 = CNNLayer(3, 32)
         self.Downsample1 = Downsample(32)
         self.Conv2 = CNNLayer(32, 64)
@@ -54,7 +54,6 @@ class three_d_CNN(nn.Module):
         self.Upsample4 = Upsample(64)
         self.Conv9 = CNNLayer(64, 32)
         self.pre = torch.nn.Conv3d(32, 3, 3, 1, 1)
-        self.Th = torch.nn.Sigmoid()
 
     def forward(self, x):
         x1= self.Conv1(x)
@@ -66,21 +65,17 @@ class three_d_CNN(nn.Module):
         x4=self.Conv4(x)
         x=self.Downsample4(x4)
         x=self.Conv5(x)
-        upsample1=self.Upsample1(x)
-        concat1=torch.cat([upsample1,x4],dim=1)
+        x=self.Upsample1(x)
+        concat1=torch.cat([x,x4],dim=1)
         x=self.Conv6(concat1)
-        upsample2=self.Upsample2(conv6)
-        concat2=torch.cat([upsample2,x3],dim=1)
+        x=self.Upsample2(x)
+        concat2=torch.cat([x,x3],dim=1)
         x=self.Conv7(concat2)
-        upsample3=self.Upsample3(conv7)
-        concat3=torch.cat([upsample3,x2],dim=1)
+        x=self.Upsample3(x)
+        concat3=torch.cat([x,x2],dim=1)
         x=self.Conv8(concat3)
-        upsample4=self.Upsample4(conv8)
-        concat4=torch.cat([upsample4,x1],dim=1)
+        x=self.Upsample4(x)
+        concat4=torch.cat([x,x1],dim=1)
         x=self.Conv9(concat4)
         x=self.pre(x)
-        x=self.sigmoid(x)
         return x
-
-
- if __name__ == '__main__':
