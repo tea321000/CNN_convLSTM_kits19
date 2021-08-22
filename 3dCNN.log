@@ -1,99 +1,98 @@
 ----------------------------------------------------------------
         Layer (type)               Output Shape         Param #
 ================================================================
-            Conv3d-1       [-1, 32, 48, 48, 48]             896
-       BatchNorm3d-2       [-1, 32, 48, 48, 48]              64
-              ReLU-3       [-1, 32, 48, 48, 48]               0
-            Conv3d-4       [-1, 32, 48, 48, 48]          27,680
-       BatchNorm3d-5       [-1, 32, 48, 48, 48]              64
-              ReLU-6       [-1, 32, 48, 48, 48]               0
-          CNNLayer-7       [-1, 32, 48, 48, 48]               0
-         MaxPool3d-8       [-1, 32, 24, 24, 24]               0
-        Downsample-9       [-1, 32, 24, 24, 24]               0
-           Conv3d-10       [-1, 64, 24, 24, 24]          55,360
-      BatchNorm3d-11       [-1, 64, 24, 24, 24]             128
-             ReLU-12       [-1, 64, 24, 24, 24]               0
-           Conv3d-13       [-1, 64, 24, 24, 24]         110,656
-      BatchNorm3d-14       [-1, 64, 24, 24, 24]             128
-             ReLU-15       [-1, 64, 24, 24, 24]               0
-         CNNLayer-16       [-1, 64, 24, 24, 24]               0
-        MaxPool3d-17       [-1, 64, 12, 12, 12]               0
-       Downsample-18       [-1, 64, 12, 12, 12]               0
-           Conv3d-19      [-1, 128, 12, 12, 12]         221,312
-      BatchNorm3d-20      [-1, 128, 12, 12, 12]             256
-             ReLU-21      [-1, 128, 12, 12, 12]               0
-           Conv3d-22      [-1, 128, 12, 12, 12]         442,496
-      BatchNorm3d-23      [-1, 128, 12, 12, 12]             256
-             ReLU-24      [-1, 128, 12, 12, 12]               0
-         CNNLayer-25      [-1, 128, 12, 12, 12]               0
-        MaxPool3d-26         [-1, 128, 6, 6, 6]               0
-       Downsample-27         [-1, 128, 6, 6, 6]               0
-           Conv3d-28         [-1, 256, 6, 6, 6]         884,992
-      BatchNorm3d-29         [-1, 256, 6, 6, 6]             512
-             ReLU-30         [-1, 256, 6, 6, 6]               0
-           Conv3d-31         [-1, 256, 6, 6, 6]       1,769,728
-      BatchNorm3d-32         [-1, 256, 6, 6, 6]             512
-             ReLU-33         [-1, 256, 6, 6, 6]               0
-         CNNLayer-34         [-1, 256, 6, 6, 6]               0
-        MaxPool3d-35         [-1, 256, 3, 3, 3]               0
-       Downsample-36         [-1, 256, 3, 3, 3]               0
-           Conv3d-37         [-1, 512, 3, 3, 3]       3,539,456
-      BatchNorm3d-38         [-1, 512, 3, 3, 3]           1,024
-             ReLU-39         [-1, 512, 3, 3, 3]               0
-           Conv3d-40         [-1, 512, 3, 3, 3]       7,078,400
-      BatchNorm3d-41         [-1, 512, 3, 3, 3]           1,024
-             ReLU-42         [-1, 512, 3, 3, 3]               0
-         CNNLayer-43         [-1, 512, 3, 3, 3]               0
-           Conv3d-44         [-1, 256, 6, 6, 6]         131,328
-         Upsample-45         [-1, 256, 6, 6, 6]               0
-           Conv3d-46         [-1, 256, 6, 6, 6]       3,539,200
-      BatchNorm3d-47         [-1, 256, 6, 6, 6]             512
-             ReLU-48         [-1, 256, 6, 6, 6]               0
-           Conv3d-49         [-1, 256, 6, 6, 6]       1,769,728
-      BatchNorm3d-50         [-1, 256, 6, 6, 6]             512
-             ReLU-51         [-1, 256, 6, 6, 6]               0
-         CNNLayer-52         [-1, 256, 6, 6, 6]               0
-           Conv3d-53      [-1, 128, 12, 12, 12]          32,896
-         Upsample-54      [-1, 128, 12, 12, 12]               0
-           Conv3d-55      [-1, 128, 12, 12, 12]         884,864
-      BatchNorm3d-56      [-1, 128, 12, 12, 12]             256
-             ReLU-57      [-1, 128, 12, 12, 12]               0
-           Conv3d-58      [-1, 128, 12, 12, 12]         442,496
-      BatchNorm3d-59      [-1, 128, 12, 12, 12]             256
-             ReLU-60      [-1, 128, 12, 12, 12]               0
-         CNNLayer-61      [-1, 128, 12, 12, 12]               0
-           Conv3d-62       [-1, 64, 24, 24, 24]           8,256
-         Upsample-63       [-1, 64, 24, 24, 24]               0
-           Conv3d-64       [-1, 64, 24, 24, 24]         221,248
-      BatchNorm3d-65       [-1, 64, 24, 24, 24]             128
-             ReLU-66       [-1, 64, 24, 24, 24]               0
-           Conv3d-67       [-1, 64, 24, 24, 24]         110,656
-      BatchNorm3d-68       [-1, 64, 24, 24, 24]             128
-             ReLU-69       [-1, 64, 24, 24, 24]               0
-         CNNLayer-70       [-1, 64, 24, 24, 24]               0
-           Conv3d-71       [-1, 32, 48, 48, 48]           2,080
-         Upsample-72       [-1, 32, 48, 48, 48]               0
-           Conv3d-73       [-1, 32, 48, 48, 48]          55,328
-      BatchNorm3d-74       [-1, 32, 48, 48, 48]              64
-             ReLU-75       [-1, 32, 48, 48, 48]               0
-           Conv3d-76       [-1, 32, 48, 48, 48]          27,680
-      BatchNorm3d-77       [-1, 32, 48, 48, 48]              64
-             ReLU-78       [-1, 32, 48, 48, 48]               0
-         CNNLayer-79       [-1, 32, 48, 48, 48]               0
-           Conv3d-80        [-1, 3, 48, 48, 48]           2,595
+            Conv3d-1     [-1, 32, 80, 160, 160]             896
+       BatchNorm3d-2     [-1, 32, 80, 160, 160]              64
+              ReLU-3     [-1, 32, 80, 160, 160]               0
+            Conv3d-4     [-1, 32, 80, 160, 160]          27,680
+       BatchNorm3d-5     [-1, 32, 80, 160, 160]              64
+              ReLU-6     [-1, 32, 80, 160, 160]               0
+          CNNLayer-7     [-1, 32, 80, 160, 160]               0
+         MaxPool3d-8       [-1, 32, 40, 80, 80]               0
+        Downsample-9       [-1, 32, 40, 80, 80]               0
+           Conv3d-10       [-1, 64, 40, 80, 80]          55,360
+      BatchNorm3d-11       [-1, 64, 40, 80, 80]             128
+             ReLU-12       [-1, 64, 40, 80, 80]               0
+           Conv3d-13       [-1, 64, 40, 80, 80]         110,656
+      BatchNorm3d-14       [-1, 64, 40, 80, 80]             128
+             ReLU-15       [-1, 64, 40, 80, 80]               0
+         CNNLayer-16       [-1, 64, 40, 80, 80]               0
+        MaxPool3d-17       [-1, 64, 20, 40, 40]               0
+       Downsample-18       [-1, 64, 20, 40, 40]               0
+           Conv3d-19      [-1, 128, 20, 40, 40]         221,312
+      BatchNorm3d-20      [-1, 128, 20, 40, 40]             256
+             ReLU-21      [-1, 128, 20, 40, 40]               0
+           Conv3d-22      [-1, 128, 20, 40, 40]         442,496
+      BatchNorm3d-23      [-1, 128, 20, 40, 40]             256
+             ReLU-24      [-1, 128, 20, 40, 40]               0
+         CNNLayer-25      [-1, 128, 20, 40, 40]               0
+        MaxPool3d-26      [-1, 128, 10, 20, 20]               0
+       Downsample-27      [-1, 128, 10, 20, 20]               0
+           Conv3d-28      [-1, 256, 10, 20, 20]         884,992
+      BatchNorm3d-29      [-1, 256, 10, 20, 20]             512
+             ReLU-30      [-1, 256, 10, 20, 20]               0
+           Conv3d-31      [-1, 256, 10, 20, 20]       1,769,728
+      BatchNorm3d-32      [-1, 256, 10, 20, 20]             512
+             ReLU-33      [-1, 256, 10, 20, 20]               0
+         CNNLayer-34      [-1, 256, 10, 20, 20]               0
+        MaxPool3d-35       [-1, 256, 5, 10, 10]               0
+       Downsample-36       [-1, 256, 5, 10, 10]               0
+           Conv3d-37       [-1, 512, 5, 10, 10]       3,539,456
+      BatchNorm3d-38       [-1, 512, 5, 10, 10]           1,024
+             ReLU-39       [-1, 512, 5, 10, 10]               0
+           Conv3d-40       [-1, 512, 5, 10, 10]       7,078,400
+      BatchNorm3d-41       [-1, 512, 5, 10, 10]           1,024
+             ReLU-42       [-1, 512, 5, 10, 10]               0
+         CNNLayer-43       [-1, 512, 5, 10, 10]               0
+           Conv3d-44      [-1, 256, 10, 20, 20]         131,328
+         Upsample-45      [-1, 256, 10, 20, 20]               0
+           Conv3d-46      [-1, 256, 10, 20, 20]       3,539,200
+      BatchNorm3d-47      [-1, 256, 10, 20, 20]             512
+             ReLU-48      [-1, 256, 10, 20, 20]               0
+           Conv3d-49      [-1, 256, 10, 20, 20]       1,769,728
+      BatchNorm3d-50      [-1, 256, 10, 20, 20]             512
+             ReLU-51      [-1, 256, 10, 20, 20]               0
+         CNNLayer-52      [-1, 256, 10, 20, 20]               0
+           Conv3d-53      [-1, 128, 20, 40, 40]          32,896
+         Upsample-54      [-1, 128, 20, 40, 40]               0
+           Conv3d-55      [-1, 128, 20, 40, 40]         884,864
+      BatchNorm3d-56      [-1, 128, 20, 40, 40]             256
+             ReLU-57      [-1, 128, 20, 40, 40]               0
+           Conv3d-58      [-1, 128, 20, 40, 40]         442,496
+      BatchNorm3d-59      [-1, 128, 20, 40, 40]             256
+             ReLU-60      [-1, 128, 20, 40, 40]               0
+         CNNLayer-61      [-1, 128, 20, 40, 40]               0
+           Conv3d-62       [-1, 64, 40, 80, 80]           8,256
+         Upsample-63       [-1, 64, 40, 80, 80]               0
+           Conv3d-64       [-1, 64, 40, 80, 80]         221,248
+      BatchNorm3d-65       [-1, 64, 40, 80, 80]             128
+             ReLU-66       [-1, 64, 40, 80, 80]               0
+           Conv3d-67       [-1, 64, 40, 80, 80]         110,656
+      BatchNorm3d-68       [-1, 64, 40, 80, 80]             128
+             ReLU-69       [-1, 64, 40, 80, 80]               0
+         CNNLayer-70       [-1, 64, 40, 80, 80]               0
+           Conv3d-71     [-1, 32, 80, 160, 160]           2,080
+         Upsample-72     [-1, 32, 80, 160, 160]               0
+           Conv3d-73     [-1, 32, 80, 160, 160]          55,328
+      BatchNorm3d-74     [-1, 32, 80, 160, 160]              64
+             ReLU-75     [-1, 32, 80, 160, 160]               0
+           Conv3d-76     [-1, 32, 80, 160, 160]          27,680
+      BatchNorm3d-77     [-1, 32, 80, 160, 160]              64
+             ReLU-78     [-1, 32, 80, 160, 160]               0
+         CNNLayer-79     [-1, 32, 80, 160, 160]               0
+           Conv3d-80      [-1, 3, 80, 160, 160]           2,595
 ================================================================
 Total params: 21,365,219
 Trainable params: 21,365,219
 Non-trainable params: 0
 ----------------------------------------------------------------
-Input size (MB): 0.42
-Forward/backward pass size (MB): 585.98
+Input size (MB): 7.81
+Forward/backward pass size (MB): 10851.56
 Params size (MB): 81.50
-Estimated Total Size (MB): 667.91
+Estimated Total Size (MB): 10940.88
 ----------------------------------------------------------------
-/home/me/nnunet/lib/python3.6/site-packages/torch/nn/functional.py:3035: UserWarning: Default upsampling behavior when mode=trilinear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
-  "See the documentation of nn.Upsample for details.".format(mode))
-flops_all 50915506176 flops_operator Counter({'conv': 50727223296, 'batch_norm': 188282880}) flops_module {'': Counter({'conv': 50727223296, 'batch_norm': 188282880}), 'Conv1': Counter({'conv': 6306398208, 'batch_norm': 70778880}), 'Conv1.layer': Counter({'conv': 6306398208, 'batch_norm': 70778880}), 'Conv1.layer.0': Counter({'conv': 191102976}), 'Conv1.layer.1': Counter({'batch_norm': 35389440}), 'Conv1.layer.2': Counter(), 'Conv1.layer.3': Counter({'conv': 6115295232}), 'Conv1.layer.4': Counter({'batch_norm': 35389440}), 'Conv1.layer.5': Counter(), 'Downsample1': Counter(), 'Downsample1.layer': Counter(), 'Conv2': Counter({'conv': 4586471424, 'batch_norm': 17694720}), 'Conv2.layer': Counter({'conv': 4586471424, 'batch_norm': 17694720}), 'Conv2.layer.0': Counter({'conv': 1528823808}), 'Conv2.layer.1': Counter({'batch_norm': 8847360}), 'Conv2.layer.2': Counter(), 'Conv2.layer.3': Counter({'conv': 3057647616}), 'Conv2.layer.4': Counter({'batch_norm': 8847360}), 'Conv2.layer.5': Counter(), 'Downsample2': Counter(), 'Downsample2.layer': Counter(), 'Conv3': Counter({'conv': 2293235712, 'batch_norm': 4423680}), 'Conv3.layer': Counter({'conv': 2293235712, 'batch_norm': 4423680}), 'Conv3.layer.0': Counter({'conv': 764411904}), 'Conv3.layer.1': Counter({'batch_norm': 2211840}), 'Conv3.layer.2': Counter(), 'Conv3.layer.3': Counter({'conv': 1528823808}), 'Conv3.layer.4': Counter({'batch_norm': 2211840}), 'Conv3.layer.5': Counter(), 'Downsample3': Counter(), 'Downsample3.layer': Counter(), 'Conv4': Counter({'conv': 1146617856, 'batch_norm': 1105920}), 'Conv4.layer': Counter({'conv': 1146617856, 'batch_norm': 1105920}), 'Conv4.layer.0': Counter({'conv': 382205952}), 'Conv4.layer.1': Counter({'batch_norm': 552960}), 'Conv4.layer.2': Counter(), 'Conv4.layer.3': Counter({'conv': 764411904}), 'Conv4.layer.4': Counter({'batch_norm': 552960}), 'Conv4.layer.5': Counter(), 'Downsample4': Counter(), 'Downsample4.layer': Counter(), 'Conv5': Counter({'conv': 573308928, 'batch_norm': 276480}), 'Conv5.layer': Counter({'conv': 573308928, 'batch_norm': 276480}), 'Conv5.layer.0': Counter({'conv': 191102976}), 'Conv5.layer.1': Counter({'batch_norm': 138240}), 'Conv5.layer.2': Counter(), 'Conv5.layer.3': Counter({'conv': 382205952}), 'Conv5.layer.4': Counter({'batch_norm': 138240}), 'Conv5.layer.5': Counter(), 'Upsample1': Counter({'conv': 56623104}), 'Upsample1.C': Counter({'conv': 56623104}), 'Conv6': Counter({'conv': 2293235712, 'batch_norm': 1105920}), 'Conv6.layer': Counter({'conv': 2293235712, 'batch_norm': 1105920}), 'Conv6.layer.0': Counter({'conv': 1528823808}), 'Conv6.layer.1': Counter({'batch_norm': 552960}), 'Conv6.layer.2': Counter(), 'Conv6.layer.3': Counter({'conv': 764411904}), 'Conv6.layer.4': Counter({'batch_norm': 552960}), 'Conv6.layer.5': Counter(), 'Upsample2': Counter({'conv': 113246208}), 'Upsample2.C': Counter({'conv': 113246208}), 'Conv7': Counter({'conv': 4586471424, 'batch_norm': 4423680}), 'Conv7.layer': Counter({'conv': 4586471424, 'batch_norm': 4423680}), 'Conv7.layer.0': Counter({'conv': 3057647616}), 'Conv7.layer.1': Counter({'batch_norm': 2211840}), 'Conv7.layer.2': Counter(), 'Conv7.layer.3': Counter({'conv': 1528823808}), 'Conv7.layer.4': Counter({'batch_norm': 2211840}), 'Conv7.layer.5': Counter(), 'Upsample3': Counter({'conv': 226492416}), 'Upsample3.C': Counter({'conv': 226492416}), 'Conv8': Counter({'conv': 9172942848, 'batch_norm': 17694720}), 'Conv8.layer': Counter({'conv': 9172942848, 'batch_norm': 17694720}), 'Conv8.layer.0': Counter({'conv': 6115295232}), 'Conv8.layer.1': Counter({'batch_norm': 8847360}), 'Conv8.layer.2': Counter(), 'Conv8.layer.3': Counter({'conv': 3057647616}), 'Conv8.layer.4': Counter({'batch_norm': 8847360}), 'Conv8.layer.5': Counter(), 'Upsample4': Counter({'conv': 452984832}), 'Upsample4.C': Counter({'conv': 452984832}), 'Conv9': Counter({'conv': 18345885696, 'batch_norm': 70778880}), 'Conv9.layer': Counter({'conv': 18345885696, 'batch_norm': 70778880}), 'Conv9.layer.0': Counter({'conv': 12230590464}), 'Conv9.layer.1': Counter({'batch_norm': 35389440}), 'Conv9.layer.2': Counter(), 'Conv9.layer.3': Counter({'conv': 6115295232}), 'Conv9.layer.4': Counter({'batch_norm': 35389440}), 'Conv9.layer.5': Counter(), 'final': Counter({'conv': 573308928})}
+/home/vince/nnunet/lib/python3.7/site-packages/torch/nn/functional.py:3613: UserWarning: Default upsampling behavior when mode=trilinear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
+  "See the documentation of nn.Upsample for details.".format(mode)
 Unsupported operator aten::max_pool3d encountered 4 time(s)
 Unsupported operator aten::upsample_trilinear3d encountered 4 time(s)
-
+flops_all 942879744000 flops_operator Counter({'conv': 939393024000, 'batch_norm': 3486720000}) flops_module {'': Counter({'conv': 939393024000, 'batch_norm': 3486720000}), 'Conv1': Counter({'conv': 116785152000, 'batch_norm': 1310720000}), 'Conv1.layer': Counter({'conv': 116785152000, 'batch_norm': 1310720000}), 'Conv1.layer.0': Counter({'conv': 3538944000}), 'Conv1.layer.1': Counter({'batch_norm': 655360000}), 'Conv1.layer.2': Counter(), 'Conv1.layer.3': Counter({'conv': 113246208000}), 'Conv1.layer.4': Counter({'batch_norm': 655360000}), 'Conv1.layer.5': Counter(), 'Downsample1': Counter(), 'Downsample1.layer': Counter(), 'Conv2': Counter({'conv': 84934656000, 'batch_norm': 327680000}), 'Conv2.layer': Counter({'conv': 84934656000, 'batch_norm': 327680000}), 'Conv2.layer.0': Counter({'conv': 28311552000}), 'Conv2.layer.1': Counter({'batch_norm': 163840000}), 'Conv2.layer.2': Counter(), 'Conv2.layer.3': Counter({'conv': 56623104000}), 'Conv2.layer.4': Counter({'batch_norm': 163840000}), 'Conv2.layer.5': Counter(), 'Downsample2': Counter(), 'Downsample2.layer': Counter(), 'Conv3': Counter({'conv': 42467328000, 'batch_norm': 81920000}), 'Conv3.layer': Counter({'conv': 42467328000, 'batch_norm': 81920000}), 'Conv3.layer.0': Counter({'conv': 14155776000}), 'Conv3.layer.1': Counter({'batch_norm': 40960000}), 'Conv3.layer.2': Counter(), 'Conv3.layer.3': Counter({'conv': 28311552000}), 'Conv3.layer.4': Counter({'batch_norm': 40960000}), 'Conv3.layer.5': Counter(), 'Downsample3': Counter(), 'Downsample3.layer': Counter(), 'Conv4': Counter({'conv': 21233664000, 'batch_norm': 20480000}), 'Conv4.layer': Counter({'conv': 21233664000, 'batch_norm': 20480000}), 'Conv4.layer.0': Counter({'conv': 7077888000}), 'Conv4.layer.1': Counter({'batch_norm': 10240000}), 'Conv4.layer.2': Counter(), 'Conv4.layer.3': Counter({'conv': 14155776000}), 'Conv4.layer.4': Counter({'batch_norm': 10240000}), 'Conv4.layer.5': Counter(), 'Downsample4': Counter(), 'Downsample4.layer': Counter(), 'Conv5': Counter({'conv': 10616832000, 'batch_norm': 5120000}), 'Conv5.layer': Counter({'conv': 10616832000, 'batch_norm': 5120000}), 'Conv5.layer.0': Counter({'conv': 3538944000}), 'Conv5.layer.1': Counter({'batch_norm': 2560000}), 'Conv5.layer.2': Counter(), 'Conv5.layer.3': Counter({'conv': 7077888000}), 'Conv5.layer.4': Counter({'batch_norm': 2560000}), 'Conv5.layer.5': Counter(), 'Upsample1': Counter({'conv': 1048576000}), 'Upsample1.C': Counter({'conv': 1048576000}), 'Conv6': Counter({'conv': 42467328000, 'batch_norm': 20480000}), 'Conv6.layer': Counter({'conv': 42467328000, 'batch_norm': 20480000}), 'Conv6.layer.0': Counter({'conv': 28311552000}), 'Conv6.layer.1': Counter({'batch_norm': 10240000}), 'Conv6.layer.2': Counter(), 'Conv6.layer.3': Counter({'conv': 14155776000}), 'Conv6.layer.4': Counter({'batch_norm': 10240000}), 'Conv6.layer.5': Counter(), 'Upsample2': Counter({'conv': 2097152000}), 'Upsample2.C': Counter({'conv': 2097152000}), 'Conv7': Counter({'conv': 84934656000, 'batch_norm': 81920000}), 'Conv7.layer': Counter({'conv': 84934656000, 'batch_norm': 81920000}), 'Conv7.layer.0': Counter({'conv': 56623104000}), 'Conv7.layer.1': Counter({'batch_norm': 40960000}), 'Conv7.layer.2': Counter(), 'Conv7.layer.3': Counter({'conv': 28311552000}), 'Conv7.layer.4': Counter({'batch_norm': 40960000}), 'Conv7.layer.5': Counter(), 'Upsample3': Counter({'conv': 4194304000}), 'Upsample3.C': Counter({'conv': 4194304000}), 'Conv8': Counter({'conv': 169869312000, 'batch_norm': 327680000}), 'Conv8.layer': Counter({'conv': 169869312000, 'batch_norm': 327680000}), 'Conv8.layer.0': Counter({'conv': 113246208000}), 'Conv8.layer.1': Counter({'batch_norm': 163840000}), 'Conv8.layer.2': Counter(), 'Conv8.layer.3': Counter({'conv': 56623104000}), 'Conv8.layer.4': Counter({'batch_norm': 163840000}), 'Conv8.layer.5': Counter(), 'Upsample4': Counter({'conv': 8388608000}), 'Upsample4.C': Counter({'conv': 8388608000}), 'Conv9': Counter({'conv': 339738624000, 'batch_norm': 1310720000}), 'Conv9.layer': Counter({'conv': 339738624000, 'batch_norm': 1310720000}), 'Conv9.layer.0': Counter({'conv': 226492416000}), 'Conv9.layer.1': Counter({'batch_norm': 655360000}), 'Conv9.layer.2': Counter(), 'Conv9.layer.3': Counter({'conv': 113246208000}), 'Conv9.layer.4': Counter({'batch_norm': 655360000}), 'Conv9.layer.5': Counter(), 'final': Counter({'conv': 10616832000})}

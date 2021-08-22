@@ -271,7 +271,7 @@ class ConvLSTM(nn.Module):
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels,
                     kernel_size=kernel_size, padding=padding, stride=stride, bias=False),
-            nn.BatchNorm2d(out_channels)
+            # nn.BatchNorm2d(out_channels)
             )
 
     def forward(self, inputs):
