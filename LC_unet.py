@@ -26,6 +26,8 @@ class CNNLayer(nn.Module):
         return res
 
 
+
+
 class Downsample(nn.Module):
     def __init__(self, kernel_size):
         super(Downsample, self).__init__()

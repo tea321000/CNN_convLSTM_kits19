@@ -1,87 +1,13 @@
-from torch.utils.data import DataLoader, Dataset
-from batchgenerators.transforms.spatial_transforms import SpatialTransform
-import SimpleITK as sitk
 import numpy as np
-from scipy import ndimage
-from scipy.ndimage.interpolation import zoom
 import os
-from random import random
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from LC_unet import LC_UNet
 import argparse
-from torchvision.transforms import ToTensor
-
-
-class Kits19(Dataset):
-    def __init__(self, root_dir, transform=None):
-        # self.root_dir = root_dir
-        assert os.path.isdir(root_dir) == True, "root dir not exist"
-        self.transform = transform
-        # path=os.path.join(root_dir)
-        self.images = []
-        self.labels = []
-        subdirs = [x[0] for x in os.walk(root_dir)]
-        for subdir in subdirs:
-            if os.path.isfile(os.path.join(subdir, 'imaging.nii.gz')):
-                self.images.append(os.path.join(subdir, 'imaging.nii.gz'))
-                self.labels.append(os.path.join(subdir, 'segmentation.nii.gz'))
-        assert len(self.images) == len(self.labels)
-
-    def __getitem__(self, index):
-        image = sitk.ReadImage(self.images[index])
-        image = sitk.GetArrayFromImage(image)
-        label = sitk.ReadImage(self.labels[index])
-        label = sitk.GetArrayFromImage(label)
-        sample = {'image': image, 'label': label}
-        if self.transform:
-            sample = self.transform(sample)
-        return sample
-
-    def __len__(self):
-        return len(self.images)
-
-
-class RandomGenerator(object):
-    def __init__(self, output_size):
-        self.output_size = output_size
-
-    def __call__(self, sample):
-        def random_rot_flip(image, label):
-            k = np.random.randint(0, 4)
-            image = np.rot90(image, k)
-            label = np.rot90(label, k)
-            axis = np.random.randint(0, 2)
-            image = np.flip(image, axis=axis).copy()
-            label = np.flip(label, axis=axis).copy()
-            return image, label
-
-        def random_rotate(image, label):
-            angle = np.random.randint(-20, 20)
-            image = ndimage.rotate(image, angle, order=0, reshape=False)
-            label = ndimage.rotate(label, angle, order=0, reshape=False)
-            return image, label
-
-        image, label = sample['image'], sample['label']
-        x, y, z = image.shape
-        # ind = random.randrange(0, img.shape[0])
-        # image = img[ind, ...]
-        # label = lab[ind, ...]
-        if random() > 0.5:
-            image, label = random_rot_flip(image, label)
-        elif random() > 0.5:
-            image, label = random_rotate(image, label)
-
-        image = zoom(
-            image, (self.output_size[0] / x, self.output_size[1] / y, self.output_size[2]/z), order=0)
-        label = zoom(
-            label, (self.output_size[0] / x, self.output_size[1] / y, self.output_size[2]/z), order=0)
-        image = torch.from_numpy(
-            image.astype(np.float32)).unsqueeze(0)
-        label = torch.from_numpy(label.astype(np.uint8))
-        sample = {'image': image, 'label': label}
-        return sample
+from kits19 import Kits19
+from torchsummary import summary
+from fvcore.nn import FlopCountAnalysis
 
 
 class RandomRotFlip(object):
@@ -145,6 +71,7 @@ class RandomCrop(object):
         label = torch.from_numpy(label.astype(np.uint8))
         return {'image': image, 'label': label}
 
+
 def parse_arguments():
     def source_path(path):
         if os.path.isdir(path):
@@ -172,6 +99,9 @@ if __name__ == '__main__':
     ]))
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
     model = LC_UNet().to(device)
+    summary(model, (1, *args.patch_size))
+    flops = FlopCountAnalysis(model, torch.rand(args.batch_size, 1, *args.patch_size).to(device))
+    print("flops", flops.by_module())
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     train_loss = []
