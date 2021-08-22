@@ -101,7 +101,7 @@ if __name__ == '__main__':
     model = ThreeDCNN().to(device)
     summary(model, (1, *args.patch_size))
     flops = FlopCountAnalysis(model, torch.rand(args.batch_size, 1, *args.patch_size).to(device))
-    print("flops",  flops.by_module())
+    print("flops",  flops.by_operator())
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     train_loss = []
