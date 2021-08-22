@@ -3,21 +3,29 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+# class CNNLayer(nn.Module):
+#     def __init__(self, C_in, C_out):
+#         super(CNNLayer, self).__init__()
+#         self.conv = torch.nn.Conv2d(C_in, C_out, 3, 1, 1)
+#         # self.norm = torch.nn.BatchNorm3d(C_out)
+#         self.relu = torch.nn.ReLU()
+
+#     def forward(self, x):
+#         res = self.conv(x[:,:,0,:,:]).unsqueeze(2)
+#         for depth in range(1, x.shape[2]):
+#             res = torch.cat((res, self.conv(x[:,:,depth,:,:]).unsqueeze(2)),dim=2)
+
+#         return self.relu(res)
+
 class CNNLayer(nn.Module):
     def __init__(self, C_in, C_out):
         super(CNNLayer, self).__init__()
-        self.conv = torch.nn.Conv2d(C_in, C_out, 3, 1, 1)
-        # self.norm = torch.nn.BatchNorm3d(C_out)
+        self.conv = torch.nn.Conv3d(C_in, C_out, 3, 1, 1)
+        self.norm = torch.nn.BatchNorm3d(C_out)
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):
-        res = self.conv(x[:,:,0,:,:]).unsqueeze(2)
-        for depth in range(1, x.shape[2]):
-            res = torch.cat((res, self.conv(x[:,:,depth,:,:]).unsqueeze(2)),dim=2)
-
-        return self.relu(res)
-
-
+        return self.relu(self.norm(self.conv(x)))
 
 
 class Downsample(nn.Module):
@@ -32,11 +40,11 @@ class Downsample(nn.Module):
 class Upsample(nn.Module):
     def __init__(self, C):
         super(Upsample, self).__init__()
-        self.C = torch.nn.Conv3d(C, C // 2, 1, 1)
+        self.C = torch.nn.Conv3d(C, C // 2, 3, 1, 1)
 
     def forward(self, x):
-        up = F.interpolate(x, scale_factor=2, mode='trilinear')
-        return self.C(up)
+        x = F.interpolate(x, scale_factor=2, mode='trilinear')
+        return self.C(x)
         # return torch.cat((x, r), 1)
 
 
@@ -257,20 +265,15 @@ class LC_UNet(torch.nn.Module):
         super(LC_UNet, self).__init__()
         kernel_size = (3, 3)
         num_layers = 1
-        self.Conv1 = CNNLayer(1, 32)
-        self.convLSTM1 = ConvLSTM(32, 32, kernel_size, num_layers)
+        self.convLSTM1 = ConvLSTM(1, 32, kernel_size, num_layers)
         self.Downsample1 = Downsample(2)
-        self.Conv2 = CNNLayer(32, 64)
-        self.convLSTM2 = ConvLSTM(64, 64, kernel_size, num_layers)
+        self.convLSTM2 = ConvLSTM(32, 64, kernel_size, num_layers)
         self.Downsample2 = Downsample(2)
-        self.Conv3 = CNNLayer(64, 128)
-        self.convLSTM3 = ConvLSTM(128, 128, kernel_size, num_layers)
+        self.convLSTM3 = ConvLSTM(64, 128, kernel_size, num_layers)
         self.Downsample3 = Downsample(2)
-        self.Conv4 = CNNLayer(128, 256)
-        self.convLSTM4 = ConvLSTM(256, 256, kernel_size, num_layers)
+        self.convLSTM4 = ConvLSTM(128, 256, kernel_size, num_layers)
         self.Downsample4 = Downsample(2)
-        self.Conv5 = CNNLayer(256, 512)
-        self.convLSTM5 = ConvLSTM(512, 512, kernel_size, num_layers)
+        self.convLSTM5 = ConvLSTM(256, 512, kernel_size, num_layers)
         self.Upsample1 = Upsample(512)
         self.Conv6 = CNNLayer(512, 256)
         self.Upsample2 = Upsample(256)
@@ -282,19 +285,14 @@ class LC_UNet(torch.nn.Module):
         self.final = torch.nn.Conv3d(32, 3, 3, 1, 1)
 
     def forward(self, x):
-        x = self.Conv1(x)
         lstm1 = self.convLSTM1(x)
         x = self.Downsample1(lstm1)
-        x = self.Conv2(x)
         lstm2 = self.convLSTM2(x)
         x = self.Downsample2(lstm2)
-        x = self.Conv3(x)
         lstm3 = self.convLSTM3(x)
         x = self.Downsample3(lstm3)
-        x = self.Conv4(x)
         lstm4 = self.convLSTM4(x)
         x = self.Downsample4(lstm4)
-        x = self.Conv5(x)
         x = self.convLSTM5(x)
         upsample1 = self.Upsample1(x)
         concat1 = torch.cat([upsample1, lstm4], dim=1)
@@ -309,7 +307,6 @@ class LC_UNet(torch.nn.Module):
         concat4 = torch.cat([upsample4, lstm1], dim=1)
         x = self.Conv9(concat4)
         x = self.final(x)
-        # x = self.sigmoid(x)
         return x
 
 

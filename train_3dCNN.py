@@ -84,7 +84,7 @@ def parse_arguments():
     parser.add_argument('-d', '--dataset', help='path to kits19 dataset',
                         default='/media/me/research/dataset/kits19/data',
                         type=source_path)
-    parser.add_argument('-p', '--patch_size', help='patch size', type=list, default=[48, 48, 48])
+    parser.add_argument('-p', '--patch_size', help='patch size', type=int, default=[48, 48, 48],  nargs='+')
     parser.add_argument('-l', '--learning_rate', help='learning rate', type=float, default=0.01)
     parser.add_argument('-e', '--epochs', help='epochs', type=int, default=100)
     return parser.parse_args()
