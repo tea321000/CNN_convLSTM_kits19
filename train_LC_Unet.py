@@ -101,7 +101,7 @@ if __name__ == '__main__':
     model = LC_UNet().to(device)
     summary(model, (1, *args.patch_size))
     flops = FlopCountAnalysis(model, torch.rand(args.batch_size, 1, *args.patch_size).to(device))
-    print("flops", flops.by_operator())
+    print("flops_all",flops.total(), "flops_operator", flops.by_operator(), "flops_module", flops.by_module_and_operator())
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     train_loss = []
